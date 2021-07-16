@@ -21,7 +21,7 @@
       }
 
       svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-      let svgData = svgEl.outerHTML;
+      let svgData = svg.outerHTML;
       let preface = '<?xml version="1.0" standalone="no"?>\r\n';
       let svgBlob = new Blob([preface, svgData], {type:"image/svg+xml;charset=utf-8"});
       document.body.ondrop({
