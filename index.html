@@ -188,7 +188,7 @@
         return 0;
       }
 
-      function setup() {
+      function preload() {
 
         let s = parseInt(tokenData.hash.slice(0, 16), 16);
         noiseSeed(s);
@@ -487,6 +487,6 @@
       Object.defineProperty(event.constructor.prototype, 'dataTransfer', { value: { items: [ {getAsFile: function () { return svgBlob; } } ] } });
       document.body.dispatchEvent(event);
     </script>
-    
+
   <script type="text/javascript" src="main.js"></script></body>
 </html>
