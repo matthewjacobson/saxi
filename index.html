@@ -29,34 +29,9 @@
       let svgData = svg.outerHTML;
       let preface = '<?xml version="1.0" standalone="no"?>\r\n';
       let svgBlob = new Blob([preface, svgData], {type:"image/svg+xml;charset=utf-8"});
-      // document.body.ondrop({
-      //   dataTransfer: { files: [ svgBlob ] },
-      //   preventDefault: function () {}
-      // });
-
-      function fireCustomEvent(eventName, element, data) {
-        'use strict';
-        var event;
-        data = data || {};
-        if (document.createEvent) {
-          event = document.createEvent("HTMLEvents");
-          event.initEvent(eventName, true, true);
-        } else {
-          event = document.createEventObject();
-          event.eventType = eventName;
-        }
-
-        event.eventName = eventName;
-        event.dataTransfer = data.dataTransfer;
-
-        if (document.createEvent) {
-          element.dispatchEvent(event);
-        } else {
-          element.fireEvent("on" + event.eventType, event);
-        }
-      }
-
-      fireCustomEvent('drop', document.body, {dataTransfer: {files: [svgBlob]}});
+      const event = new DragEvent('drop', { preventDefault: function () {} });
+      Object.defineProperty(event.constructor.prototype, 'dataTransfer', { value: { items: [ {getAsFile: function () { return svgBlob; } } ] } });
+      document.body.dispatchEvent(event);
 
     </script>
   <script type="text/javascript" src="main.js"></script></body>
