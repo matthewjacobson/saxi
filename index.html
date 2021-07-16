@@ -450,8 +450,9 @@
   </head>
   <body>
     <div id='app'></div>
-    <script type="text/javascript" src="main.js"></script>
-    <script>
+  <script type="text/javascript" src="main.js"></script></body>
+  <script>
+    window.addEventListener('load', function() {
       svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
       let svgData = svg.outerHTML;
       let preface = '<?xml version="1.0" standalone="no"?>\r\n';
@@ -459,6 +460,6 @@
       const event = new DragEvent('drop', { preventDefault: function () {} });
       Object.defineProperty(event.constructor.prototype, 'dataTransfer', { value: { items: [ {getAsFile: function () { return svgBlob; } } ] } });
       document.body.dispatchEvent(event);
-    </script>
-  </body>
+    })
+  </script>
 </html>
