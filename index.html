@@ -452,7 +452,7 @@
     <div id='app'></div>
   <script type="text/javascript" src="main.js"></script></body>
   <script>
-    window.addEventListener('load', function() {
+    document.getElementsByTagName("canvas")[0].addEventListener('load', function() {
       svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
       let svgData = svg.outerHTML;
       let preface = '<?xml version="1.0" standalone="no"?>\r\n';
