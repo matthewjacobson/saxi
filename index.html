@@ -3,6 +3,33 @@
   <head>
     <title>saxi</title>
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,700,900" rel="stylesheet">
+    <script>
+      let ns = 'http://www.w3.org/2000/svg';
+      let svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('width', '6in');
+      svg.setAttribute('height', '4in');
+      svg.setAttribute('viewBox', '0 0 600 400');
+      for (let i = 0; i < 20; i++) {
+        let path = document.createElementNS(ns, 'path');
+        path.setAttribute('style', 'fill:none;stroke-width:1;stroke:rgb(0%,0%,0%);');
+        let x1 = 600 * Math.random();
+        let y1 = 400 * Math.random();
+        let x2 = 600 * Math.random();
+        let y2 = 400 * Math.random();
+        path.setAttribute('d', 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2);
+        svg.appendChild(path);
+      }
+
+      svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      let svgData = svgEl.outerHTML;
+      let preface = '<?xml version="1.0" standalone="no"?>\r\n';
+      let svgBlob = new Blob([preface, svgData], {type:"image/svg+xml;charset=utf-8"});
+      document.body.ondrop({
+        dataTransfer: { files: [ svgBlob ] },
+        preventDefault: function () {}
+      });
+
+    </script>
   </head>
   <body>
     <div id='app'></div>
