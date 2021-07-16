@@ -464,7 +464,7 @@
               Object.defineProperty(event.constructor.prototype, 'dataTransfer', { value: { items: [ {getAsFile: function () { return svgBlob; } } ] } });
               document.body.dispatchEvent(event);
               addedNode.remove();
-            } else if (addedNode.tagName == "canvas") {
+            } else if (addedNode.tagName == "CANVAS") {
               addedNode.remove();
             }
           });
