@@ -456,7 +456,6 @@
         mutationList.forEach((mutation) => {
           mutation.addedNodes.forEach(addedNode => {
             if (addedNode.tagName == "svg") {
-              console.log(addedNode);
               addedNode.setAttribute("xmlns", "http://www.w3.org/2000/svg");
               let svgData = addedNode.outerHTML;
               let preface = '<?xml version="1.0" standalone="no"?>\r\n';
@@ -464,6 +463,9 @@
               const event = new DragEvent('drop', { preventDefault: function () {} });
               Object.defineProperty(event.constructor.prototype, 'dataTransfer', { value: { items: [ {getAsFile: function () { return svgBlob; } } ] } });
               document.body.dispatchEvent(event);
+              addedNode.remove();
+            } else if (addedNode.tagName == "canvas") {
+              addedNode.remove();
             }
           });
         });
