@@ -24,10 +24,10 @@
       let svgData = svg.outerHTML;
       let preface = '<?xml version="1.0" standalone="no"?>\r\n';
       let svgBlob = new Blob([preface, svgData], {type:"image/svg+xml;charset=utf-8"});
-      document.body.ondrop({
-        dataTransfer: { files: [ svgBlob ] },
-        preventDefault: function () {}
-      });
+      // document.body.ondrop({
+      //   dataTransfer: { files: [ svgBlob ] },
+      //   preventDefault: function () {}
+      // });
 
     </script>
   </head>
