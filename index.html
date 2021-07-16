@@ -146,36 +146,41 @@
       ];
 
       let sds = [
-        // {n: 'dense', p: 1/5, sd: 0.005},
-        // {n: 'normal', p: 3/5, sd: 0.01},
-        // {n: 'loose', p: 1/5, sd: 0.015}
-        {n: 'loose', p: 1, sd: 0.04}
+        {n: 'dense', p: 1/5, sd: 0.005},
+        {n: 'normal', p: 3/5, sd: 0.01},
+        {n: 'loose', p: 1/5, sd: 0.015}
       ]
 
       let sfs = [
+        // {
+        //   n: 'normal',
+        //   p: 1/2,
+        //   sf: function(p) { return sd.sd * mwh; },
+        //   dsf: function(p) {return 0.01;}
+        // },
+        // {
+        //   n: 'circle',
+        //   p: 1/4,
+        //   sf: function(p) {return dist(p[0], p[1], hw, hh) < 0.45 * mwh ? sd.sd * mwh : 3 * sd.sd * mwh;},
+        //   dsf: function(p) {return dist(p[0], p[1], hw, hh) < 0.45 * mwh ? 0.01 : 0.5;}
+        // },
+        // {
+        //   n: 'verticalBar',
+        //   p: 1/8,
+        //   sf: function(p) {return abs(p[0] -  hw) < 0.3 * w ? sd.sd * mwh : 3 * sd.sd * mwh;},
+        //   dsf: function(p) {return abs(p[0] -  hw) < 0.3 * w ? 0.01 : 0.5;}
+        // },
+        // {
+        //   n: 'horizontalBar',
+        //   p: 1/8,
+        //   sf: function(p) {return abs(p[1] -  hh) < 0.3 * h ? sd.sd * mwh : 3 * sd.sd * mwh;},
+        //   dsf: function(p) {return abs(p[1] -  hh) < 0.3 * h ? 0.01 : 0.5;}
+        // }
         {
           n: 'normal',
           p: 1/2,
           sf: function(p) { return sd.sd * mwh; },
-          dsf: function(p) {return 0.01;}
-        },
-        {
-          n: 'circle',
-          p: 1/4,
-          sf: function(p) {return dist(p[0], p[1], hw, hh) < 0.45 * mwh ? sd.sd * mwh : 3 * sd.sd * mwh;},
-          dsf: function(p) {return dist(p[0], p[1], hw, hh) < 0.45 * mwh ? 0.01 : 0.5;}
-        },
-        {
-          n: 'verticalBar',
-          p: 1/8,
-          sf: function(p) {return abs(p[0] -  hw) < 0.3 * w ? sd.sd * mwh : 3 * sd.sd * mwh;},
-          dsf: function(p) {return abs(p[0] -  hw) < 0.3 * w ? 0.01 : 0.5;}
-        },
-        {
-          n: 'horizontalBar',
-          p: 1/8,
-          sf: function(p) {return abs(p[1] -  hh) < 0.3 * h ? sd.sd * mwh : 3 * sd.sd * mwh;},
-          dsf: function(p) {return abs(p[1] -  hh) < 0.3 * h ? 0.01 : 0.5;}
+          dsf: function(p) {return 0.5;}
         }
       ];
 
