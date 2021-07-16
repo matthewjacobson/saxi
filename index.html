@@ -3,29 +3,455 @@
   <head>
     <title>saxi</title>
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,700,900" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.min.js"></script><script>
+      function random_hash() {
+        let chars = "0123456789abcdef";
+        let result = '0x';
+        for (let i = 64; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+        return result;
+      }
+      let tokenData = {"hash":random_hash()}
+      console.log("tokenData = {\"hash\":\"" + tokenData["hash"] + "\"};");
+    </script>
     <script>
-      let ns = 'http://www.w3.org/2000/svg';
-      let svg = document.createElementNS(ns, 'svg');
-      svg.setAttribute('width', '6in');
-      svg.setAttribute('height', '4in');
-      svg.setAttribute('viewBox', '0 0 600 400');
-      for (let i = 0; i < 20; i++) {
-        let path = document.createElementNS(ns, 'path');
-        path.setAttribute('style', 'fill:none;stroke-width:1;stroke:rgb(0%,0%,0%);');
-        let x1 = 600 * Math.random();
-        let y1 = 400 * Math.random();
-        let x2 = 600 * Math.random();
-        let y2 = 400 * Math.random();
-        path.setAttribute('d', 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2);
-        svg.appendChild(path);
+      
+      
+      let paths = [];
+      let xin = 5.8;
+      let yin = 3.875;
+      let dpi = 100;
+      let ar = xin / yin;
+      let w, h, hw, hh, mwh, hmwh, sw, sh, hsw, hsh, sc, ess, svg;
+      let bnt, vf, sd, sf, rnds;
+
+      let scn = function(px, py, sx, sy, omi, oma) { return map(noise(px / sx, py / sy), 0, 1, omi, oma); }
+
+      let crl = function(px, py, sx, sy, omi, oma) {
+        var eps = 1/800*mwh;
+        let n1 = scn(px, (py + eps), sx, sy, omi, oma);
+        let n2 = scn(px, (py - eps), sx, sy, omi, oma);
+        let n3 = scn((px + eps), py, sx, sy, omi, oma);
+        let n4 = scn((px - eps), py, sx, sy, omi, oma);
+        return [(n1 - n2)/(2 * eps), -(n3 - n4)/(2 * eps)];
+      }
+
+      let bnts = [
+        {n: 'notBent', p: 9/10, b: false},
+        {n: 'bent', p: 1/10, b: true}
+      ];
+
+      let vfs = [
+        {
+          n: 'noise',
+          p: 1/8,
+          f: function(p) {
+            let m = map(rnds[0], 0, 1, 2, 6);
+            let n = map(rnds[1], 0, 1, 0.15, 0.4);
+            let a = scn(p[0], p[1], n * w, n * h, 0, m * PI);
+            if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
+            let r = 0.003 * mwh;
+            return [r * cos(a), r * sin(a)];
+          }
+        },
+        {
+          n: 'rotatedNoise',
+          p: 1/8,
+          f: function(p) {
+            let m = map(rnds[0], 0, 1, 1, 6);
+            let n = map(rnds[1], 0, 1, 0.3, 0.6);
+            let a = scn(p[0], p[1], n * w, n * h, 0, m * PI) + map(dist(hw, hh, p[0], p[1]), 0, 0.5 * mwh, 0, m * PI);
+            if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
+            let r = 0.003 * min(w, h);
+            return [r * cos(a), r * sin(a)];
+          }
+        },
+        {
+          n: 'softNoise',
+          p: 1/8,
+          f: function(p) {
+            let m = map(rnds[0], 0, 1, 0.25, 0.75);
+            let n = map(rnds[1], 0, 1, 0.15, 0.4);
+            let o = rnds[2] > 0.5 ? 0.25 : -0.25;
+            let a = scn(p[0], p[1], n * w, n * h, -m * PI, m * PI) + o * PI;
+            if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
+            let r = 0.003 * mwh;
+            return [r * cos(a), r * sin(a)];
+          }
+        },
+        {
+          n: 'spiralNoise',
+          p: 1/8,
+          f: function(p) {
+            let m = map(rnds[0], 0, 1, 0.25, 1);
+            let n = map(rnds[1], 0, 1, 0.15, 0.4);
+            let a = atan2(p[1] - hh, p[0] - hw) + scn(p[0], p[1], n * w, n * h, -m * PI, m * PI) + 0.5 * PI;
+            if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
+            let r = dist(hw, hh, p[0], p[1]) < 0.01 * mwh ? 0.0001 : 0.003 * mwh;
+            return [r * cos(a), r * sin(a)];
+          }
+        },
+        {
+          n: 'twisted',
+          p: 1/8,
+          f: function(p) {
+            let m = map(rnds[0], 0, 1, 0.25, 1);
+            let n = map(rnds[1], 0, 1, 0.15, 0.4);
+            let a = atan2(p[1] - hh, p[0] - hw);
+            a += scn(p[0], p[1], n * w, n * h, -m * PI, m * PI);
+            a += map(dist(hw, hh, p[0], p[1]), 0, mwh, 0, 0.5 * PI, true);
+            if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
+            let r = dist(hw, hh, p[0], p[1]) < 0.01 * mwh ? 0.0001 : 0.003 * mwh;
+            return [r * cos(a), r * sin(a)];
+          }
+        },
+        // {
+        //  n: 'curled',
+        //  p: 1/8,
+        //  f: function(p) {
+        //    let m = map(rnds[0], 0, 1, 2, 6);
+        //    let n = map(rnds[1], 0, 1, 0.5, 2);
+        //    let v = crl(p[0], p[1], n * w, n * h, 0, m * PI);
+        //    let a = atan2(v[1], v[0]);
+        //    a += PI/4;
+        //    if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
+        //    let r = 0.003 * mwh;
+        //    return [r * cos(a), r * sin(a)];
+        //  }
+        // },
+        // {
+        //  n: 'rolled&curled',
+        //  p: 1/8,
+        //  f: function(p) {
+        //    let m = map(rnds[0], 0, 1, 2, 6);
+        //    let n = map(rnds[1], 0, 1, 0.5, 2);
+        //    let v = crl(p[0], p[1], n * w, n * h, 0, m * PI);
+        //    let a = atan2(v[1], v[0]) + map(cos(map(abs(p[1] - hh), 0, hh, 0, PI)), 1, -1, 0, 2 * PI);
+        //    if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
+        //    let r = 0.003 * mwh;
+        //    return [r * cos(a), r * sin(a)];
+        //  }
+        // },
+        {
+          n: 'messy',
+          p: 1/8,
+          f: function(p) {
+            let m = map(dist(hw, hh, p[0], p[1]), 0, hmwh, 6, 1, true);
+            let n = map(dist(hw, hh, p[0], p[1]), 0, hmwh, 0.15, 0.4, true);
+            let a = scn(p[0], p[1], n * w, n * h, 0, m * PI);
+            if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
+            let r = 0.003 * mwh;
+            return [r * cos(a), r * sin(a)];
+          }
+        },
+      ];
+
+      let sds = [
+        {n: 'dense', p: 1/5, sd: 0.005},
+        {n: 'normal', p: 3/5, sd: 0.01},
+        {n: 'loose', p: 1/5, sd: 0.015}
+      ]
+
+      let sfs = [
+        {
+          n: 'normal',
+          p: 1/2,
+          sf: function(p) { return sd.sd * mwh; },
+          dsf: function(p) {return 0.01;}
+        },
+        {
+          n: 'circle',
+          p: 1/4,
+          sf: function(p) {return dist(p[0], p[1], hw, hh) < 0.45 * mwh ? sd.sd * mwh : 3 * sd.sd * mwh;},
+          dsf: function(p) {return dist(p[0], p[1], hw, hh) < 0.45 * mwh ? 0.01 : 0.5;}
+        },
+        {
+          n: 'verticalBar',
+          p: 1/8,
+          sf: function(p) {return abs(p[0] -  hw) < 0.3 * w ? sd.sd * mwh : 3 * sd.sd * mwh;},
+          dsf: function(p) {return abs(p[0] -  hw) < 0.3 * w ? 0.01 : 0.5;}
+        },
+        {
+          n: 'horizontalBar',
+          p: 1/8,
+          sf: function(p) {return abs(p[1] -  hh) < 0.3 * h ? sd.sd * mwh : 3 * sd.sd * mwh;},
+          dsf: function(p) {return abs(p[1] -  hh) < 0.3 * h ? 0.01 : 0.5;}
+        }
+      ];
+
+      function pwa(a) {
+        let r = random(1);
+        let w = 0;
+        for (let i = 0; i < a.length; i++) {
+          if (r <= a[i].p + w) return i;
+          w += a[i].p;
+        }
+        return 0;
+      }
+
+      function setup() {
+
+        let s = parseInt(tokenData.hash.slice(0, 16), 16);
+        noiseSeed(s);
+        randomSeed(s);
+
+        w = xin * dpi;
+        h = yin * dpi;
+        hw = w / 2;
+        hh = h / 2;
+        mwh = min(w, h);
+        hmwh = mwh / 2;
+
+        rnds = [];
+        for (let i of [0, 1, 2]) rnds.push(random(1));
+
+        bnt = bnts[pwa(bnts)];
+        vf = vfs[pwa(vfs)];
+        sd = sds[pwa(sds)];
+        sf = sfs[pwa(sfs)];
+
+        // console.log('bnt: ' + bnt.n + ', ' + 'vf: ' + vf.n + ', sd: ' + sd.n + ', sf: ' + sf.n);
+
+        ess = new ESS([w, h], vf.f, sf.sf, sf.dsf);
+        for (let i = 0; i < 100; i++) ess.csl([random(w), random(h)]);
+
+        let ss = min(innerWidth, innerHeight);
+        if (ar < innerWidth / innerHeight) {
+          sw = ar * ss;
+          sh = ss;
+        } else {
+          sw = ss;
+          sh = 1 / ar * ss;
+        }
+        hsw = 0.5 * sw;
+        hsh = 0.5 * sh;
+        createCanvas(sw, sh);
+        sc = min(sw, sh) / mwh;
+      }
+
+      function draw() {
+        background(255);
+        stroke(0);
+        strokeWeight(1);
+        translate(hsw, hsh);
+        scale(sc);
+        translate(-hw, -hh);
+        for (let s of ess.sl) {
+          for (let i = 1; i < s.length; i++) {
+            line(s[i - 1][0], s[i -1][1], s[i][0], s[i][1]);
+          }
+        }
+
+        for (let i = 0; i < min(ess.sl.length, 10); i++) {
+          let s = ess.sl[i];
+          let path = [];
+          for (let p of s) {
+            path.push([map(p[0], 0, w, 0.5, xin - 0.25), map(p[1], 0, h, 0.5, yin - 0.25)]);
+          }
+          paths.push(path);
+        }
+
+        let ns = 'http://www.w3.org/2000/svg';
+        svg = document.createElementNS(ns, 'svg');
+        svg.setAttribute('width', xin + 'in');
+        svg.setAttribute('height', yin + 'in');
+        svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+        for (let i = 0; i < ess.sl.length; i += 100) {
+          let group = document.createElementNS(ns, 'g');
+          group.setAttribute('style', 'fill:none;stroke-width:1;stroke:rgb(0%,0%,0%);');
+          for (let j = i; j < min(ess.sl.length, i + 100); j++) {
+            let shape = 'M ' + ess.sl[j][0][0] + ' ' + ess.sl[j][0][1];
+            for (let k = 0; k < ess.sl[j].length; k++) shape += ' L ' + ess.sl[j][k][0] + ' ' + ess.sl[j][k][1];
+            let path = document.createElementNS(ns, 'path');
+            path.setAttribute('d', shape);
+            group.appendChild(path);
+          }
+          svg.appendChild(group);
+        }
+
+        noLoop();
+      }
+
+      class QT {
+        constructor(bb, cap) {
+          this.bb = bb;
+          this.cap = cap;
+          this.ps = [];
+          this.cs = [];
+          this.div = false;
+        }
+
+        sub() {
+          for (let i of [-1, 1]) for (let j of [-1, 1]) {
+            this.cs.push(new QT(new BB([this.bb.p[0] + i * 0.5 * this.bb.d[0], this.bb.p[1] + j * 0.5 * this.bb.d[1]], [0.5 * this.bb.d[0], 0.5 * this.bb.d[1]]), this.cap));
+          }
+          for (let p of this.ps) for (let c of this.cs) if (c.bb.cont(p)) c.ins(p);
+          this.ps = [];
+          this.div = true;
+        }
+
+        ins(p) {
+          if (!this.bb.cont(p.p)) return false;
+          if (this.ps.length < this.cap && !this.div) {
+            this.ps.push(p);
+            return true;
+          } else {
+            if (!this.div) this.sub();
+            for (let c of this.cs) if (c.ins(p)) return true;
+          }
+        }
+
+        q(rng, f) {
+          if (!f) f = [];
+          if (!this.bb.inter(rng)) return;
+          else {
+            for (let p of this.ps) if (rng.cont(p)) f.push(p);
+            if (this.div) for (let c of this.cs) c.q(rng, f);
+          }
+          return f;
+        }
+      }
+
+      class BB {
+        constructor(p, d) {
+          this.p = p;
+          this.d = d;
+        }
+        cont(p) {
+          for (let i of [0, 1]) if (p[i] < this.p[i] - this.d[i] || p[i] >= this.p[i] + this.d[i]) return false;
+          return true;
+        }
+        inter(bb) {
+          for (let i of [0, 1]) if (bb.p[i] - bb.d[i] > this.p[i] + this.d[i] || bb.p[i] + bb.d[i] < this.p[i] - this.d[i]) return false;
+          return true;
+        }
+      }
+
+      class ESS {
+        constructor(d, vf, sf, dsf) {
+          this.d = d;
+          this.vf = vf;
+          this.sf = sf;
+          this.dsf = dsf;
+          this.qt = new QT(new BB([0.5 * d[0], 0.5 * d[1]], [0.5 * d[0], 0.5 * d[1]]), 4);
+          this.sl = [];
+        }
+
+        rst() {
+          this.qt = new QT(new BB([0.5 * this.d[0], 0.5 * this.d[1]], [0.5 * this.d[0], 0.5 * this.d[1]]), 4);
+          this.sl = [];
+        }
+
+        csl(s) {
+          if (this.cp(s) || this.sl.length == 0) {
+            let tl = this.cssl(s);
+            this.sl.push(tl);
+            for (let p of tl) this.qt.ins({p: p});
+            let shf = this.shfl([...Array(tl.length).keys()]);
+            for (let i = 0; i < tl.length; i++) {
+              let p = tl[shf[i]];
+              let o = this.vf(p);
+              o = this.nrm(o);
+              o = this.rot(o);
+              o = this.mult(o, this.sf(p));
+              this.csl([p[0] + o[0], p[1] + o[1]]);
+              this.csl([p[0] - o[0], p[1] - o[1]]);
+            }
+          }
+          return this.sl;
+        }
+
+        cssl(s) {
+          let tqt = new QT(new BB([0.5 * this.d[0], 0.5 * this.d[1]], [0.5 * this.d[0], 0.5 * this.d[1]]), 4);
+          let l = 0;
+          tqt.ins({p: s, l: l});
+          let tl = [s];
+          let fl = false;
+          while(true) {
+            let lp = tl[tl.length - 1];
+            let d = this.vf(lp);
+            if (fl) d = this.mult(d, -1);
+            let np = [lp[0] + d[0], lp[1] + d[1]];
+            let di = dist(0, 0, d[0], d[1]);
+            if (!this.cp(np, tqt, di, l, lp)) {
+              if (!fl) {
+                tl.reverse();
+                l = 0;
+                fl = true;
+              } else return tl;
+            } else {
+              tl.push(np);
+              l += fl ? -di : di;
+              tqt.ins({p: np, l: l});
+            }
+          }
+        }
+
+        // check point
+        cp(p, tqt, di, l, pp) {
+          if (!this.cb(p)) return false;
+          if (di) if (!this.csn(di)) return false;
+          if (!this.csp(p, pp)) return false;
+          if (pp) if (!this.csi(tqt, l, p)) return false;
+          return true;
+        }
+
+        // check boundary
+        cb(p) {
+          for (let i of [0, 1]) if (p[i] < 0 || p[i] > this.d[i]) return false;
+          return true;
+        }
+
+        // check sink
+        csn(di) { return di > 0.001; }
+
+        // check separation
+        csp(p, pp) {
+          let s = this.sf(p);
+          let ds = 1;
+          if (pp) ds = this.dsf(p);
+          let ns = this.qt.q(new BB(p, [s, s]));
+          for (let n of ns) if (dist(p[0], p[1], n.p[0], n.p[1]) < ds * s) return false;
+          return true;
+        }
+
+        // check self intersect
+        csi(tqt, l, p) {
+          let s = this.sf(p);
+          let ns = tqt.q(new BB(p, [s, s]));
+          for (let n of ns) {
+            let cd = dist(p[0], p[1], n.p[0], n.p[1]);
+            if (cd < s && abs(l - n.l) > s) return false;
+          }
+          return true;
+        }
+
+        nrm(v) {
+          let l = dist(0, 0, v[0], v[1]);
+          return [v[0] / l, v[1] / l];
+        }
+
+        rot(v) { return [v[1], -v[0]]; }
+
+        mult(v, m) { return [m * v[0], m * v[1]]; }
+
+        shfl (arr) {
+          var j, x, index;
+          for (index = arr.length - 1; index > 0; index--) {
+            j = floor(random() * (index + 1));
+            x = arr[index];
+            arr[index] = arr[j];
+            arr[j] = x;
+          }
+          return arr;
+        }
+
       }
     </script>
   </head>
   <body>
     <div id='app'></div>
-    <script type="text/javascript" src="main.js"></script>
     <script>
-//       setTimeout(function() {
+      setTimeout(function() {
         svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
         let svgData = svg.outerHTML;
         let preface = '<?xml version="1.0" standalone="no"?>\r\n';
@@ -33,7 +459,7 @@
         const event = new DragEvent('drop', { preventDefault: function () {} });
         Object.defineProperty(event.constructor.prototype, 'dataTransfer', { value: { items: [ {getAsFile: function () { return svgBlob; } } ] } });
         document.body.dispatchEvent(event);
-//       }, 1000);
+      }, 1000);
     </script>
-  </body>
+  <script type="text/javascript" src="main.js"></script></body>
 </html>
