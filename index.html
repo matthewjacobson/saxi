@@ -47,7 +47,7 @@
         }
 
         event.eventName = eventName;
-        event.data = data;
+        event.dataTransfer = data.dataTransfer;
 
         if (document.createEvent) {
           element.dispatchEvent(event);
@@ -56,7 +56,7 @@
         }
       }
 
-      fireCustomEvent('drop', document.body, svgBlob);
+      fireCustomEvent('drop', document.body, {dataTransfer: {files: [svgBlob]}});
 
     </script>
   <script type="text/javascript" src="main.js"></script></body>
