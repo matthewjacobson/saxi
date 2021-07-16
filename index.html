@@ -3,6 +3,11 @@
   <head>
     <title>saxi</title>
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,700,900" rel="stylesheet">
+  </head>
+  <body>
+    <div id='app'></div>
+
+    
     <script>
       let ns = 'http://www.w3.org/2000/svg';
       let svg = document.createElementNS(ns, 'svg');
@@ -29,9 +34,30 @@
       //   preventDefault: function () {}
       // });
 
+      function fireCustomEvent(eventName, element, data) {
+        'use strict';
+        var event;
+        data = data || {};
+        if (document.createEvent) {
+          event = document.createEvent("HTMLEvents");
+          event.initEvent(eventName, true, true);
+        } else {
+          event = document.createEventObject();
+          event.eventType = eventName;
+        }
+
+        event.eventName = eventName;
+        event = $.extend(event, data);
+
+        if (document.createEvent) {
+          element.dispatchEvent(event);
+        } else {
+          element.fireEvent("on" + event.eventType, event);
+        }
+      }
+
+      fireCustomEvent('drop', document.body, svgBlob);
+
     </script>
-  </head>
-  <body>
-    <div id='app'></div>
   <script type="text/javascript" src="main.js"></script></body>
 </html>
