@@ -7,7 +7,7 @@
   <body>
     <div id='app'></div>
 
-    
+
     <script>
       let ns = 'http://www.w3.org/2000/svg';
       let svg = document.createElementNS(ns, 'svg');
@@ -47,7 +47,7 @@
         }
 
         event.eventName = eventName;
-        event = $.extend(event, data);
+        event.data = data;
 
         if (document.createEvent) {
           element.dispatchEvent(event);
