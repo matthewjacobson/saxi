@@ -454,7 +454,10 @@
     <script>
       const observer = new MutationObserver((mutationList, observer) => {
         mutationList.forEach((mutation) => {
-          console.log(mutation);
+          console.log(mutation.addedNodes[0].tagName);
+          if (mutation.addedNodes[0].tagName == "svg") {
+            console.log('svg added!');
+          }
         });
         // svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
         // let svgData = svg.outerHTML;
