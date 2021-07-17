@@ -1092,7 +1092,7 @@ function Root() {
     <div className={`root ${state.connected ? "connected" : "disconnected"}`}>
       <div className="control-panel">
         <div className={`saxi-title red`} title={state.deviceInfo ? state.deviceInfo.path : null}>
-          <span className="red reg">s</span><span className="teal">axi</span>
+          <span className="red reg">plottables.io</span>
         </div>
         {IS_WEB ? <PortSelector driver={driver} setDriver={setDriver} /> : null}
         {!state.connected ? <div className="info-disconnected">disconnected</div> : null}
@@ -1139,7 +1139,7 @@ function Root() {
 function DragTarget() {
   return <div className="drag-target">
     <div className="drag-target-message">
-      Drag SVG here
+      Loading...
     </div>
   </div>;
 }

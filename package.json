@@ -26,7 +26,8 @@
     "prestart": "npm run build",
     "start": "node cli.js",
     "dev": "tsc && webpack --mode=development -w & node cli.js",
-    "deploy": "rimraf dist/ui && IS_WEB=1 webpack --mode=production && gh-pages -d dist/ui",
+    "deploy": "rimraf dist/ui && IS_WEB=1 webpack --mode=production",
+    "gitdeploy": "rimraf dist/ui && IS_WEB=1 webpack --mode=production && gh-pages -d dist/ui",
     "test": "jest"
   },
   "author": "Jeremy Rose <nornagon@nornagon.net>",
