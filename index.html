@@ -36,8 +36,9 @@
       }
 
       let bnts = [
-        {n: 'notBent', p: 9/10, b: false},
-        {n: 'bent', p: 1/10, b: true}
+        // {n: 'notBent', p: 9/10, b: false},
+        // {n: 'bent', p: 1/10, b: true}
+        {n: 'notBent', p: 1, b: false}
       ];
 
       let vfs = [
@@ -90,59 +91,59 @@
             return [r * cos(a), r * sin(a)];
           }
         },
-        {
-          n: 'twisted',
-          p: 1/8,
-          f: function(p) {
-            let m = map(rnds[0], 0, 1, 0.25, 1);
-            let n = map(rnds[1], 0, 1, 0.15, 0.4);
-            let a = atan2(p[1] - hh, p[0] - hw);
-            a += scn(p[0], p[1], n * w, n * h, -m * PI, m * PI);
-            a += map(dist(hw, hh, p[0], p[1]), 0, mwh, 0, 0.5 * PI, true);
-            if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
-            let r = dist(hw, hh, p[0], p[1]) < 0.01 * mwh ? 0.0001 : 0.003 * mwh;
-            return [r * cos(a), r * sin(a)];
-          }
-        },
         // {
-        //  n: 'curled',
-        //  p: 1/8,
-        //  f: function(p) {
-        //    let m = map(rnds[0], 0, 1, 2, 6);
-        //    let n = map(rnds[1], 0, 1, 0.5, 2);
-        //    let v = crl(p[0], p[1], n * w, n * h, 0, m * PI);
-        //    let a = atan2(v[1], v[0]);
-        //    a += PI/4;
-        //    if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
-        //    let r = 0.003 * mwh;
-        //    return [r * cos(a), r * sin(a)];
-        //  }
+        //   n: 'twisted',
+        //   p: 1/8,
+        //   f: function(p) {
+        //     let m = map(rnds[0], 0, 1, 0.25, 1);
+        //     let n = map(rnds[1], 0, 1, 0.15, 0.4);
+        //     let a = atan2(p[1] - hh, p[0] - hw);
+        //     a += scn(p[0], p[1], n * w, n * h, -m * PI, m * PI);
+        //     a += map(dist(hw, hh, p[0], p[1]), 0, mwh, 0, 0.5 * PI, true);
+        //     if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
+        //     let r = dist(hw, hh, p[0], p[1]) < 0.01 * mwh ? 0.0001 : 0.003 * mwh;
+        //     return [r * cos(a), r * sin(a)];
+        //   }
         // },
+        // // {
+        // //  n: 'curled',
+        // //  p: 1/8,
+        // //  f: function(p) {
+        // //    let m = map(rnds[0], 0, 1, 2, 6);
+        // //    let n = map(rnds[1], 0, 1, 0.5, 2);
+        // //    let v = crl(p[0], p[1], n * w, n * h, 0, m * PI);
+        // //    let a = atan2(v[1], v[0]);
+        // //    a += PI/4;
+        // //    if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
+        // //    let r = 0.003 * mwh;
+        // //    return [r * cos(a), r * sin(a)];
+        // //  }
+        // // },
+        // // {
+        // //  n: 'rolled&curled',
+        // //  p: 1/8,
+        // //  f: function(p) {
+        // //    let m = map(rnds[0], 0, 1, 2, 6);
+        // //    let n = map(rnds[1], 0, 1, 0.5, 2);
+        // //    let v = crl(p[0], p[1], n * w, n * h, 0, m * PI);
+        // //    let a = atan2(v[1], v[0]) + map(cos(map(abs(p[1] - hh), 0, hh, 0, PI)), 1, -1, 0, 2 * PI);
+        // //    if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
+        // //    let r = 0.003 * mwh;
+        // //    return [r * cos(a), r * sin(a)];
+        // //  }
+        // // },
         // {
-        //  n: 'rolled&curled',
-        //  p: 1/8,
-        //  f: function(p) {
-        //    let m = map(rnds[0], 0, 1, 2, 6);
-        //    let n = map(rnds[1], 0, 1, 0.5, 2);
-        //    let v = crl(p[0], p[1], n * w, n * h, 0, m * PI);
-        //    let a = atan2(v[1], v[0]) + map(cos(map(abs(p[1] - hh), 0, hh, 0, PI)), 1, -1, 0, 2 * PI);
-        //    if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
-        //    let r = 0.003 * mwh;
-        //    return [r * cos(a), r * sin(a)];
-        //  }
+        //   n: 'messy',
+        //   p: 1/8,
+        //   f: function(p) {
+        //     let m = map(dist(hw, hh, p[0], p[1]), 0, hmwh, 6, 1, true);
+        //     let n = map(dist(hw, hh, p[0], p[1]), 0, hmwh, 0.15, 0.4, true);
+        //     let a = scn(p[0], p[1], n * w, n * h, 0, m * PI);
+        //     if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
+        //     let r = 0.003 * mwh;
+        //     return [r * cos(a), r * sin(a)];
+        //   }
         // },
-        {
-          n: 'messy',
-          p: 1/8,
-          f: function(p) {
-            let m = map(dist(hw, hh, p[0], p[1]), 0, hmwh, 6, 1, true);
-            let n = map(dist(hw, hh, p[0], p[1]), 0, hmwh, 0.15, 0.4, true);
-            let a = scn(p[0], p[1], n * w, n * h, 0, m * PI);
-            if (bnt.b) a += floor(map(p[1], 0, h, 0, 5)) % 2 == 1 ? PI / 4 : 0;
-            let r = 0.003 * mwh;
-            return [r * cos(a), r * sin(a)];
-          }
-        },
       ];
 
       let sds = [
@@ -178,7 +179,7 @@
         // }
         {
           n: 'normal',
-          p: 1/2,
+          p: 1,
           sf: function(p) { return sd.sd * mwh; },
           dsf: function(p) {return 0.5;}
         }
